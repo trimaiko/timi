@@ -1,41 +1,75 @@
+import csv
 import sys, getopt
+import logging
+
+from flask import json
+from timi import write_timecard
 from openpyxl import load_workbook
 
-def write_cell(data, cell):
-  cell = data
+logger = logging.getLogger(__name__)
+
+# logging reference https://basicincome30.com/python-log-output
+LOG_LEVEL_FILE = 'DEBUG'
+LOG_LEVEL_CONSOLE = 'INFO'
+
+_detail_formatting = '%(asctime)s %(levelname)-8s [%(module)s#%(funcName)s %(lineno)d] %(message)s'
+
+try:
+  # Above LOG_LEVEL_FILE_CONSOLE will be output in log file
+  logging.basicConfig(
+    level=getattr(logging, LOG_LEVEL_FILE), 
+    format=_detail_formatting,
+    filename='./logs/test.log'
+  )
+except FileNotFoundError:
+  logger.info("logs directory not found")
+
+console = logging.StreamHandler()
+console.setLevel(getattr(logging, LOG_LEVEL_CONSOLE))
+console_formatter = logging.Formatter(_detail_formatting)
+console.setFormatter(console_formatter)
+
+
+# get logger
+logger.addHandler(console)
 
 def main(argv):
-  print("main starts")
+  logger.info("main starts")
+  
   # read_input
   inputfile = ''
+  
   # read_template_excel
   outputfile = ''
   
+  # change action by the options
   try:
     opts, args = getopt.getopt(argv,"hi:o:", ["inputfile=","outputfile="])
   except getopt.GetoptError:      
     print('main.py -i <inputfile> -o <outputfile>')
     sys.exit(2)
   
-  for opt,arg in opts:
+  for opt, arg in opts:
     if opt == '-h':
       print('main.py -i <inputfile> -o <outputfile>')
       sys.exit()
     elif opt in ("-i", "--inputfile"):
       inputfile = arg
-    elif opt in ("-o", "--ofile"):
+    elif opt in ("-o", "--outputfile"):
       outputfile = arg
   
   wb = load_workbook(filename = outputfile)
+  data = csv.reader
+  #always select first sheet in workbook
+  target_sheet = wb.worksheets[0]
 
-  target_sheet = wb['target_sheet']
+  write_timecard(target_sheet, )
 
-  target_sheet['A1'] = inputfile
 
   # write_to_outputfile
   wb.save(filename = outputfile)
 
-  print("main ends")
+  logger.info("main ends")
 
 if __name__ == "__main__":
    main(sys.argv[1:])
