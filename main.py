@@ -1,10 +1,7 @@
-import csv
 import sys, getopt
 import logging
-
-from flask import json
-from timi import write_timecard
-from openpyxl import load_workbook
+import json
+from timi import timemanager
 
 logger = logging.getLogger(__name__)
 
@@ -30,8 +27,11 @@ console_formatter = logging.Formatter(_detail_formatting)
 console.setFormatter(console_formatter)
 
 
-# get logger
+# add console handler to main logger
 logger.addHandler(console)
+
+# do the same to timi logger
+logging.getLogger("timi").addHandler(console)
 
 def main(argv):
   logger.info("main starts")
@@ -54,20 +54,15 @@ def main(argv):
       print('main.py -i <inputfile> -o <outputfile>')
       sys.exit()
     elif opt in ("-i", "--inputfile"):
-      inputfile = arg
+      data = arg
     elif opt in ("-o", "--outputfile"):
       outputfile = arg
   
-  wb = load_workbook(filename = outputfile)
-  data = csv.reader
-  #always select first sheet in workbook
-  target_sheet = wb.worksheets[0]
+  with open('sample.json', encoding='utf_8') as f:
+    data = json.load(f)
 
-  write_timecard(target_sheet, )
-
-
-  # write_to_outputfile
-  wb.save(filename = outputfile)
+  timi_instance = timemanager(data, outputfile)
+  timi_instance.edit_timecard()
 
   logger.info("main ends")
 
