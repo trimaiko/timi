@@ -1,7 +1,6 @@
 import logging
-from datetime import date
+from datetime import date, datetime
 from openpyxl import load_workbook
-
 
 
 class timemanager:
@@ -19,7 +18,7 @@ class timemanager:
         base_row = 8
         arrive_base_col = 6
         depart_base_col = 7
-        
+
         wb = load_workbook(filename = self.outputfile)
         #always select first sheet in workbook
         ws = wb.worksheets[0]
@@ -28,15 +27,27 @@ class timemanager:
 
         # insert arrival time
         for dat in self.data['data']:
-            mycell = ws.cell(row = base_row, column= arrive_base_col)
-            atime = datetime.strptime(dat.get('出社時刻'), '%H:%M')
-            mycell.value = self.convert_strtime_to_excel_ordinal(dtime)
-            self.logger.info(dat.get('出社時刻'))
 
-            mycell = ws.cell(row = base_row, column = depart_base_col)
-            dtime = datetime.strptime(dat.get('退社時刻'), '%H:%M')
-            mycell.value = self.convert_date_to_excel_ordinal(atime)
-            self.logger.info(dat.get('退社時刻'))
+            mycell_arrive = ws.cell(row = base_row, column= arrive_base_col)
+            mycell_dept = ws.cell(row = base_row, column = depart_base_col)
+
+            if dat.get('出社時刻') != "":
+                print(dat.get('出社時刻'))
+                atime = datetime.strptime(dat.get('出社時刻'), '%H:%M')
+                # mycell_arrive.value = self.convert_date_to_excel_ordinal(atime)
+                mycell_arrive.value = atime
+                mycell_arrive.number_format = "hh:mm:ss"
+                print('mycell_arrive.value:', mycell_arrive.value)
+                print('atime:', atime)
+                self.logger.info(dat.get('出社時刻'))
+
+                dtime = datetime.strptime(dat.get('退社時刻'), '%H:%M')
+                mycell_dept.value = self.convert_date_to_excel_ordinal(dtime)
+                self.logger.info(dat.get('退社時刻'))
+
+            else:
+                mycell_arrive.value = ""
+                mycell_dept.value = ""
 
             base_row += 1
 

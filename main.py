@@ -14,7 +14,7 @@ _detail_formatting = '%(asctime)s %(levelname)-8s [%(module)s#%(funcName)s %(lin
 try:
   # Above LOG_LEVEL_FILE_CONSOLE will be output in log file
   logging.basicConfig(
-    level=getattr(logging, LOG_LEVEL_FILE), 
+    level=getattr(logging, LOG_LEVEL_FILE),
     format=_detail_formatting,
     filename='./logs/test.log'
   )
@@ -35,30 +35,30 @@ logging.getLogger("timi").addHandler(console)
 
 def main(argv):
   logger.info("main starts")
-  
+
   # read_input
   inputfile = ''
-  
+
   # read_template_excel
   outputfile = ''
-  
+
   # change action by the options
   try:
     opts, args = getopt.getopt(argv,"hi:o:", ["inputfile=","outputfile="])
-  except getopt.GetoptError:      
+  except getopt.GetoptError:
     print('main.py -i <inputfile> -o <outputfile>')
     sys.exit(2)
-  
+
   for opt, arg in opts:
     if opt == '-h':
       print('main.py -i <inputfile> -o <outputfile>')
       sys.exit()
     elif opt in ("-i", "--inputfile"):
-      data = arg
+      inputdata = arg
     elif opt in ("-o", "--outputfile"):
       outputfile = arg
-  
-  with open('sample.json', encoding='utf_8') as f:
+
+  with open(inputdata, encoding='utf_8') as f:
     data = json.load(f)
 
   timi_instance = timemanager(data, outputfile)
@@ -67,4 +67,4 @@ def main(argv):
   logger.info("main ends")
 
 if __name__ == "__main__":
-   main(sys.argv[1:])
+  main(sys.argv[1:])
