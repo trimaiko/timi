@@ -23,23 +23,27 @@ class timemanager:
 
         wb = load_workbook(filename = self.outputfile)
         #always select first sheet in workbook
-        ws = wb.worksheets[0]
+        ws = wb["就業記録簿"]
 
         # self.logger.info(self.data)
 
         # insert arrival time
         for dat in self.data['data']:
+            if dat.get('ユーザーID') == '':
+                continue
 
             mycell_arrive = ws.cell(row = base_row, column= arrive_base_col)
             mycell_dept = ws.cell(row = base_row, column = depart_base_col)
             mycell_break = ws.cell(row = base_row, column = break_base_col)
 
             if dat.get('出社時刻') != "":
+                print(dat.get('日付'))
                 print(dat.get('出社時刻'))
                 atime = datetime.strptime(dat.get('出社時刻'), '%H:%M')
                 # mycell_arrive.value = self.convert_date_to_excel_ordinal(atime)
                 mycell_arrive.value = atime - timedelta(days=1)
                 mycell_arrive.number_format = "[h]:mm"
+
                 print('mycell_arrive.value:', mycell_arrive.value)
                 print('atime:', atime)
                 self.logger.info(dat.get('出社時刻'))
@@ -62,4 +66,5 @@ class timemanager:
             base_row += 1
 
         # write_to_outputfile
-        wb.save(filename = 'saved.xlsx')
+
+        wb.save(filename = self.outputfile)

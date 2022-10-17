@@ -37,29 +37,28 @@ def main(argv):
   logger.info("main starts")
 
   # read_input
-  inputfile = ''
+  inputdata = ''
 
-  # read_template_excel
+  # read_temporary_excel
   outputfile = ''
 
   # change action by the options
   try:
-    opts, args = getopt.getopt(argv,"hi:o:", ["inputfile=","outputfile="])
+    opts, args = getopt.getopt(argv,"hi:o:", ["inputdata=","outputfile="])
   except getopt.GetoptError:
-    print('main.py -i <inputfile> -o <outputfile>')
+    print('main.py -i <inputdata> -o <outputfile>')
     sys.exit(2)
 
   for opt, arg in opts:
     if opt == '-h':
-      print('main.py -i <inputfile> -o <outputfile>')
+      print('main.py -i <inputdata> -o <outputfile>')
       sys.exit()
-    elif opt in ("-i", "--inputfile"):
+    elif opt in ("-i", "--inputdata"):
       inputdata = arg
     elif opt in ("-o", "--outputfile"):
       outputfile = arg
 
-  with open(inputdata, encoding='utf_8') as f:
-    data = json.load(f)
+  data = json.loads(inputdata)
 
   timi_instance = timemanager(data, outputfile)
   timi_instance.edit_timecard()
