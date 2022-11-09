@@ -20,6 +20,7 @@ class timemanager:
         arrive_base_col = 6
         depart_base_col = 7
         break_base_col = 8
+        remote_base_col = 3
 
         wb = load_workbook(filename = self.outputfile)
         #always select first sheet in workbook
@@ -35,17 +36,18 @@ class timemanager:
             mycell_arrive = ws.cell(row = base_row, column= arrive_base_col)
             mycell_dept = ws.cell(row = base_row, column = depart_base_col)
             mycell_break = ws.cell(row = base_row, column = break_base_col)
+            mycell_remote = ws.cell(row = base_row, column = remote_base_col)
 
             if dat.get('出社時刻') != "":
-                print(dat.get('日付'))
-                print(dat.get('出社時刻'))
+                self.logger.info(dat.get('日付'))
+                self.logger.info(dat.get('出社時刻'))
                 atime = datetime.strptime(dat.get('出社時刻'), '%H:%M')
                 # mycell_arrive.value = self.convert_date_to_excel_ordinal(atime)
                 mycell_arrive.value = atime - timedelta(days=1)
                 mycell_arrive.number_format = "[h]:mm"
 
-                print('mycell_arrive.value:', mycell_arrive.value)
-                print('atime:', atime)
+                self.logger.info('mycell_arrive.value:', mycell_arrive.value)
+                self.logger.info('atime:', atime)
                 self.logger.info(dat.get('出社時刻'))
 
                 dtime = datetime.strptime(dat.get('退社時刻'), '%H:%M')
@@ -57,7 +59,13 @@ class timemanager:
 
                 if dtime - atime > timedelta(hours=6):
                     mycell_break.value = datetime.strptime(self.break_hour, '%H:%M') - timedelta(days=1)
-
+                # read remark
+                remark = dat.get("備考")
+                if "リモート" in remark:
+                    mycell_remote.value = "リモート"
+                elif "出張" in remark:
+                    mycell_remote.value = "出張"
+                    self.logger.info(mycell_remote)
             else:
                 mycell_arrive.value = ""
                 mycell_dept.value = ""
